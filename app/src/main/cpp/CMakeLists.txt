@@ -9,15 +9,16 @@ cmake_minimum_required(VERSION 3.4.1)
 # or SHARED, and provides the relative paths to its source code.
 # You can define multiple libraries, and CMake builds them for you.
 # Gradle automatically packages shared libraries with your APK.
+file(GLOB SRC ./*.cpp)
 
 add_library( # Sets the name of the library.
-             native-lib
+             mediaplayerlib
 
              # Sets the library as a shared library.
              SHARED
 
              # Provides a relative path to your source file(s).
-             native-lib.cpp )
+             ${SRC} )
 include_directories(./include)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -L../../../../libs/${CMAKE_ANDROID_ARCH_ABI}")
 # Searches for a specified prebuilt library and stores the path as a
@@ -38,8 +39,10 @@ find_library( # Sets the name of the path variable.
 # build script, prebuilt third-party libraries, or system libraries.
 
 target_link_libraries( # Specifies the target library.
-                       native-lib
+                       mediaplayerlib
                        avcodec avfilter avformat avutil postproc swresample swscale
+                       # Native lib
+                       android
                        # Links the target library to the log library
                        # included in the NDK.
                        ${log-lib} )
