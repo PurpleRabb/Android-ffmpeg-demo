@@ -2122,7 +2122,7 @@ const AVInputFormat *av_demuxer_iterate(void **opaque);
  * avformat_free_context() can be used to free the context and everything
  * allocated by the framework within it.
  */
-AVFormatContext *avformat_alloc_context(void);
+AVFormatContext * avformat_alloc_context(void);
 
 /**
  * Free an AVFormatContext and all its streams.
