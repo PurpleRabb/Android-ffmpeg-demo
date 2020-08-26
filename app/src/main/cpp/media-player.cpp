@@ -35,6 +35,7 @@ extern "C"
 JNIEXPORT void JNICALL
 Java_com_example_ffmpegdemo_FFPlayer_nativeStart(JNIEnv *env, jobject thiz) {
     // TODO: implement native_start()
+    nativePlayer->start();
 }
 
 extern "C"

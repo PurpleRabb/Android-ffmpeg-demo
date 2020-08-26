@@ -32,9 +32,29 @@ void CallJavaHelper::onError(int thread, int code) {
 }
 
 void CallJavaHelper::onPrepare(int thread) {
-
+    if (thread == CHILD_THREAD) {
+        //如果调用者在子线程，需要先绑定当前的ENV
+        if ( javaVm->AttachCurrentThread(&jniEnv,0) != JNI_OK ) {
+            __android_log_print(ANDROID_LOG_INFO,TAG,"%s\n",__func__);
+            return;
+        }
+        jniEnv->CallVoidMethod(jobj,jmid_prepare);
+        javaVm->DetachCurrentThread();
+    } else {
+        jniEnv->CallVoidMethod(jobj,jmid_prepare);
+    }
 }
 
 void CallJavaHelper::onProgress(int thread, int progress) {
-
+    if (thread == CHILD_THREAD) {
+        //如果调用者在子线程，需要先绑定当前的ENV
+        if ( javaVm->AttachCurrentThread(&jniEnv,0) != JNI_OK ) {
+            __android_log_print(ANDROID_LOG_INFO,TAG,"%s\n",__func__);
+            return;
+        }
+        jniEnv->CallVoidMethod(jobj,jmid_progress,progress);
+        javaVm->DetachCurrentThread();
+    } else {
+        jniEnv->CallVoidMethod(jobj,jmid_progress,progress);
+    }
 }

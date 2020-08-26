@@ -1,7 +1,9 @@
 package com.example.ffmpegdemo
 
+import android.content.res.AssetFileDescriptor
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Environment
 import android.util.Log
 import android.view.View
 import android.widget.SeekBar
@@ -26,7 +28,7 @@ class MainActivity : AppCompatActivity() {
         ffPlayerViewModel = ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory(this.application)).get(FFPlayerViewModel::class.java)
         ffPlayer = FFPlayer()
         ffPlayerViewModel.setPlayer(ffPlayer)
-
+        lifecycle.addObserver(ffPlayerViewModel)
         seekBar.setOnSeekBarChangeListener( object : OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
 
@@ -53,7 +55,10 @@ class MainActivity : AppCompatActivity() {
             //}
         })
 
-        controlButton.setOnClickListener { View.OnClickListener { ffPlayer.nativePrepare(dataSource) } }
-        ffPlayer.nativePrepare(dataSource)
+        controlButton.setOnClickListener {
+            //val file : AssetFileDescriptor = application.getResources().openRawResourceFd(R.raw.cup)
+            Log.i(TAG,getExternalFilesDir(null)?.absolutePath.toString()+"/cup.mp4")
+            ffPlayer.nativePrepare(getExternalFilesDir(null)?.absolutePath.toString()+"/cup.mp4")
+        }
     }
 }

@@ -9,6 +9,8 @@
 #include <android/log.h>
 #include "common.h"
 #include "CallJavaHelper.h"
+#include "VideoChannel.h"
+#include "AudioChannel.h"
 
 extern "C" {
 #include <libavcodec/avcodec.h>
@@ -20,14 +22,22 @@ class NativePlayer {
 
 public:
     NativePlayer(CallJavaHelper *callJavaHelper,const char* dataSouce);
+    ~NativePlayer();
     void prepare();
 
     void realPrepare();
 
+    void start();
+
 private:
-    pthread_t prepare_pid{};
+    void report_error_to_java(int thread_env,int error_code);
+
+private:
+    pthread_t prepare_pid;
     AVFormatContext *formatContext;
     CallJavaHelper *javaHelper;
+    VideoChannel *videoChannel;
+    AudioChannel *audioChannel;
     char *url;
 };
 

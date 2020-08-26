@@ -1,11 +1,11 @@
 package com.example.ffmpegdemo
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import android.util.Log
+import androidx.lifecycle.*
 
-class FFPlayerViewModel(application: Application) : AndroidViewModel(application) {
+class FFPlayerViewModel(application: Application) : AndroidViewModel(application),
+    LifecycleObserver {
     private var _error : MutableLiveData<Int> = MutableLiveData()
     private var _progress : MutableLiveData<Int> = MutableLiveData()
     private lateinit var _ffPlayer : FFPlayer
@@ -17,7 +17,7 @@ class FFPlayerViewModel(application: Application) : AndroidViewModel(application
         this._ffPlayer = ffPlayer
         _ffPlayer.setOnPrepareListener(object : FFPlayer.OnPrepareListener {
             override fun onPrepare() {
-
+                _ffPlayer.nativeStart();
             }
         })
 
@@ -26,5 +26,15 @@ class FFPlayerViewModel(application: Application) : AndroidViewModel(application
                 _error.postValue(error)
             }
         })
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+    fun pausePlayer() {
+        Log.i("ffmplayer", "pausePlayer: ")
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+    fun resumePlayer() {
+        Log.i("ffmplayer", "resumePlayer: ")
     }
 }
