@@ -16,3 +16,7 @@ AudioChannel::~AudioChannel() {
 void AudioChannel::play() {
 
 }
+
+void AudioChannel::stop() {
+
+}

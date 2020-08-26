@@ -6,10 +6,23 @@
 #define FFMPEGDEMO_VIDEOCHANNEL_H
 #include "BaseChannel.h"
 
-class VideoChannel : BaseChannel {
+extern "C" {
+#include <libavutil/time.h>
+};
+
+class VideoChannel : public BaseChannel {
 public:
     VideoChannel(int id, CallJavaHelper *javaHelper, AVCodecContext *codecContext);
     ~VideoChannel();
     void play();
+    void stop();
+
+    void decodePacket();
+
+private:
+    pthread_t pid_video_play; //解码线程(消费者线程)
+    pthread_t pid_sync; //绘制线程
+    inline void releasePacket(AVPacket *pPacket);
+    inline void releaseFrame(AVFrame *frame);
 };
 #endif //FFMPEGDEMO_VIDEOCHANNEL_H

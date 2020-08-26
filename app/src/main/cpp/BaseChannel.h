@@ -16,6 +16,14 @@ public:
     BaseChannel(int id,CallJavaHelper *javaHelper,AVCodecContext *codecContext);
     virtual ~BaseChannel();
     virtual void play() = 0;
+    virtual void stop() = 0;
+
+    SafeQueue<AVFrame *> frame_queue;
+    volatile int channelId;
+    volatile bool isPlaying;
+    CallJavaHelper *javaHelper;
+    AVCodecContext *avCodecContext;
+    SafeQueue<AVPacket *> pkt_queue;
 };
 
 #endif //FFMPEGDEMO_BASECHANNEL_H

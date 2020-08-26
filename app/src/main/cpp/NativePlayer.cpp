@@ -13,7 +13,7 @@ void *__prepare(void *arg) {
 NativePlayer::NativePlayer(CallJavaHelper *javaHelper,const char *dataSouce) {
     __android_log_print(AV_LOG_INFO,TAG,"%s:%s",__func__,dataSouce);
     url = new char[strlen(dataSouce) + 1];
-    memcpy(url,dataSouce,strlen(dataSouce));
+    strcpy(url,dataSouce);
     this->javaHelper = javaHelper;
 }
 
@@ -25,6 +25,7 @@ void NativePlayer::prepare() {
 void NativePlayer::realPrepare() {
     //该函数在线程中执行
     avformat_network_init();
+
     formatContext = avformat_alloc_context();
 
     AVDictionary *opts = nullptr;
@@ -87,8 +88,57 @@ void NativePlayer::realPrepare() {
     }
 }
 
+void *startThread(void *argv) {
+    //生产者
+    NativePlayer *nativePlayer = static_cast<NativePlayer *>(argv);
+    nativePlayer->play();
+    return nullptr;
+}
+
+void NativePlayer::play() {
+    int ret = 0;
+    while(isPlaying) {
+        //生产者线程
+        if (audioChannel && audioChannel->pkt_queue.size() > 100) {
+            //避免生产太快，消费太慢，队列崩溃
+            av_usleep(1000 * 10);
+            continue;
+        }
+        if (videoChannel && videoChannel->pkt_queue.size() > 100) {
+            av_usleep(1000 * 10);
+            continue;
+        }
+        AVPacket *packet = av_packet_alloc();
+        ret = av_read_frame(formatContext,packet);
+        if (ret == 0) {
+            if (videoChannel && packet->stream_index == videoChannel->channelId) {
+                videoChannel->pkt_queue.push(packet);
+            }
+            if (audioChannel && packet->stream_index == audioChannel->channelId) {
+                audioChannel->pkt_queue.push(packet);
+            }
+        } else if (ret == AVERROR_EOF) { //播放完毕
+            if (videoChannel->pkt_queue.empty() && videoChannel->frame_queue.empty()
+                    && audioChannel->pkt_queue.empty() && audioChannel->frame_queue.empty()) {
+                __android_log_print(AV_LOG_INFO,TAG,"%s","play eof");
+                break;
+            }
+       } else {
+            break;
+        }
+    }
+}
+
 void NativePlayer::start() {
     __android_log_print(AV_LOG_INFO,TAG,"%s",__func__);
+    isPlaying = true;
+    if (videoChannel) {
+        videoChannel->play();
+    }
+    if(audioChannel) {
+        audioChannel->play();
+    }
+    pthread_create(&play_pid, nullptr,startThread,this);
 }
 
 void NativePlayer::report_error_to_java(int thread_env, int error_code) {
@@ -100,3 +150,4 @@ void NativePlayer::report_error_to_java(int thread_env, int error_code) {
 NativePlayer::~NativePlayer() {
     delete url;
 }
+

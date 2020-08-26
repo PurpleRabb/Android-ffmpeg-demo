@@ -58,7 +58,8 @@ class MainActivity : AppCompatActivity() {
         controlButton.setOnClickListener {
             //val file : AssetFileDescriptor = application.getResources().openRawResourceFd(R.raw.cup)
             Log.i(TAG,getExternalFilesDir(null)?.absolutePath.toString()+"/cup.mp4")
-            ffPlayer.nativePrepare(getExternalFilesDir(null)?.absolutePath.toString()+"/cup.mp4")
+            //Log.i(TAG,Environment.getExternalStorageDirectory().absolutePath+"/test.mp4");
+            ffPlayer.nativePrepare(getExternalFilesDir(null)?.absolutePath.toString()+"/test.mp4")
         }
     }
 }

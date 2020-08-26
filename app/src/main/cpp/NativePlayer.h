@@ -29,15 +29,19 @@ public:
 
     void start();
 
+    void play();
+
 private:
     void report_error_to_java(int thread_env,int error_code);
 
 private:
     pthread_t prepare_pid;
+    pthread_t play_pid;
     AVFormatContext *formatContext;
     CallJavaHelper *javaHelper;
     VideoChannel *videoChannel;
     AudioChannel *audioChannel;
+    bool isPlaying;
     char *url;
 };
 
