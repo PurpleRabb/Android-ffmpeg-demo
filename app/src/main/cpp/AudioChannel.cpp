@@ -18,5 +18,5 @@ void AudioChannel::play() {
 }
 
 void AudioChannel::stop() {
-
+    isPlaying = false;
 }

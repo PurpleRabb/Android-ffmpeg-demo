@@ -19,6 +19,8 @@ public:
 
     void decodePacket();
 
+    void syncFrame();
+
 private:
     pthread_t pid_video_play; //解码线程(消费者线程)
     pthread_t pid_sync; //绘制线程

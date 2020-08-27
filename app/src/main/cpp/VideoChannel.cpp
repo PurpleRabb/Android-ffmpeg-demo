@@ -19,6 +19,11 @@ void *_decode(void *argv) {
     videoChannel->decodePacket();
 }
 
+void *_syncframe(void *argv) {
+    VideoChannel *videoChannel = static_cast<VideoChannel *>(argv);
+    videoChannel->syncFrame();
+}
+
 
 void VideoChannel::decodePacket() {
     //消费者线程，消费来自NativePlayer的packet
@@ -42,7 +47,6 @@ void VideoChannel::decodePacket() {
         AVFrame *frame = av_frame_alloc();
         ret = avcodec_receive_frame(avCodecContext,frame);
         frame_queue.push(frame);
-        __android_log_print(AV_LOG_INFO,TAG,"%s:frame_queue=%d",__func__,frame_queue.size());
         while (frame_queue.size() > 100 && isPlaying) {
             av_usleep(1000 * 10);
             continue;
@@ -51,11 +55,23 @@ void VideoChannel::decodePacket() {
     releasePacket(packet);
 }
 
+
+void VideoChannel::syncFrame() {
+    while(isPlaying) {
+        AVFrame *_frame = 0;
+        __android_log_print(AV_LOG_INFO,TAG,"%s:frame_queue=%d",__func__,frame_queue.size());
+        frame_queue.pop(_frame);
+        av_usleep(30*1000);//模拟30ms一帧
+        releaseFrame(_frame);
+    }
+}
+
 void VideoChannel::play() {
     pkt_queue.setWork(1);
     frame_queue.setWork(1);
     isPlaying = true;
     pthread_create(&pid_video_play,nullptr,_decode,this);
+    pthread_create(&pid_sync,nullptr,_syncframe,this);
 }
 
 void VideoChannel::stop() {
@@ -75,4 +91,5 @@ void VideoChannel::releaseFrame(AVFrame *frame) {
         frame = 0;
     }
 }
+
 
