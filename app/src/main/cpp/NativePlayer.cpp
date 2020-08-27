@@ -112,6 +112,7 @@ void NativePlayer::play() {
         ret = av_read_frame(formatContext,packet);
         if (ret == 0) {
             if (videoChannel && packet->stream_index == videoChannel->channelId) {
+                __android_log_print(AV_LOG_INFO,TAG,"push video packet %d",videoChannel->pkt_queue.size());
                 videoChannel->pkt_queue.push(packet);
             }
             if (audioChannel && packet->stream_index == audioChannel->channelId) {
@@ -124,6 +125,7 @@ void NativePlayer::play() {
                 break;
             }
        } else {
+            __android_log_print(AV_LOG_INFO,TAG,"%s","play %d",ret);
             break;
         }
     }

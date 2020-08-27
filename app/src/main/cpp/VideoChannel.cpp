@@ -3,6 +3,7 @@
 //
 
 #include "VideoChannel.h"
+#include "common.h"
 
 VideoChannel::VideoChannel(int id, CallJavaHelper *javaHelper, AVCodecContext *codecContext)
         : BaseChannel(id, javaHelper, codecContext) {
@@ -24,7 +25,7 @@ void VideoChannel::decodePacket() {
     AVPacket *packet = 0;
     while (isPlaying) {
         int ret = pkt_queue.pop(packet);
-        if (isPlaying) {
+        if (!isPlaying) {
             break;
         }
         if (!ret) {
@@ -41,6 +42,7 @@ void VideoChannel::decodePacket() {
         AVFrame *frame = av_frame_alloc();
         ret = avcodec_receive_frame(avCodecContext,frame);
         frame_queue.push(frame);
+        __android_log_print(AV_LOG_INFO,TAG,"%s:frame_queue=%d",__func__,frame_queue.size());
         while (frame_queue.size() > 100 && isPlaying) {
             av_usleep(1000 * 10);
             continue;
