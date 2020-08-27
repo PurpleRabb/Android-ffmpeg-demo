@@ -31,6 +31,8 @@ public:
 
     void play();
 
+    void setRenderFrameCallBack(void (*fun)(uint8_t *, int, int, int));
+
 private:
     void report_error_to_java(int thread_env,int error_code);
 
@@ -41,6 +43,7 @@ private:
     CallJavaHelper *javaHelper;
     VideoChannel *videoChannel;
     AudioChannel *audioChannel;
+    RenderFrame renderFrame;
     bool isPlaying;
     char *url;
 };

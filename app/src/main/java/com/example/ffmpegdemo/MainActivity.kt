@@ -28,6 +28,7 @@ class MainActivity : AppCompatActivity() {
         ffPlayerViewModel = ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory(this.application)).get(FFPlayerViewModel::class.java)
         ffPlayer = FFPlayer()
         ffPlayerViewModel.setPlayer(ffPlayer)
+        ffPlayer.setSurfaceView(surfaceView)
         lifecycle.addObserver(ffPlayerViewModel)
         seekBar.setOnSeekBarChangeListener( object : OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {

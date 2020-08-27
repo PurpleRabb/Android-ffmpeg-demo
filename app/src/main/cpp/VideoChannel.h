@@ -8,8 +8,11 @@
 
 extern "C" {
 #include <libavutil/time.h>
+#include <libavutil/avutil.h>
+#include <libswscale/swscale.h>
+#include <libavutil/imgutils.h>
 };
-
+typedef void (*RenderFrame)(uint8_t *,int,int,int);
 class VideoChannel : public BaseChannel {
 public:
     VideoChannel(int id, CallJavaHelper *javaHelper, AVCodecContext *codecContext);
@@ -21,10 +24,13 @@ public:
 
     void syncFrame();
 
+    void setRenderFrame(RenderFrame func);
+
 private:
     pthread_t pid_video_play; //解码线程(消费者线程)
     pthread_t pid_sync; //绘制线程
     inline void releasePacket(AVPacket *pPacket);
     inline void releaseFrame(AVFrame *frame);
+    RenderFrame renderFrame;
 };
 #endif //FFMPEGDEMO_VIDEOCHANNEL_H

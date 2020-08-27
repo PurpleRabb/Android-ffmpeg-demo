@@ -76,6 +76,7 @@ void NativePlayer::realPrepare() {
 
         if (formatContext->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
             videoChannel = new VideoChannel(i, javaHelper, codecContext);
+            videoChannel->setRenderFrame(this->renderFrame);
         }
 
         if (formatContext->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_AUDIO) {
@@ -129,6 +130,9 @@ void NativePlayer::play() {
             break;
         }
     }
+    isPlaying = false;
+    audioChannel->stop();
+    audioChannel->stop();
 }
 
 void NativePlayer::start() {
@@ -151,5 +155,9 @@ void NativePlayer::report_error_to_java(int thread_env, int error_code) {
 
 NativePlayer::~NativePlayer() {
     delete url;
+}
+
+void NativePlayer::setRenderFrameCallBack(void (*fun)(uint8_t *, int, int, int)) {
+    this->renderFrame = fun; //暂存
 }
 
