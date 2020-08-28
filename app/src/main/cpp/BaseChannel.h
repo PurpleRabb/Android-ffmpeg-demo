@@ -18,6 +18,9 @@ public:
     virtual void play() = 0;
     virtual void stop() = 0;
 
+    static void releasePacket(AVPacket *&pPacket);
+    static void releaseFrame(AVFrame *&frame);
+
     SafeQueue<AVFrame *> frame_queue;
     volatile int channelId;
     volatile bool isPlaying;

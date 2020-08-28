@@ -18,3 +18,18 @@ BaseChannel::~BaseChannel() {
         frame_queue.clear();
     }
 }
+
+
+void BaseChannel::releasePacket(AVPacket *&pPacket) {
+    if (pPacket) {
+        av_packet_free(&pPacket);
+        pPacket = 0;
+    }
+}
+
+void BaseChannel::releaseFrame(AVFrame *&frame) {
+    if (frame) {
+        av_frame_free(&frame);
+        frame = 0;
+    }
+}

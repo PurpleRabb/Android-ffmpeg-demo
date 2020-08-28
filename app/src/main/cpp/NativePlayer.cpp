@@ -93,7 +93,7 @@ void *startThread(void *argv) {
     //生产者
     NativePlayer *nativePlayer = static_cast<NativePlayer *>(argv);
     nativePlayer->play();
-    return nullptr;
+    return 0;
 }
 
 void NativePlayer::play() {
@@ -110,14 +110,18 @@ void NativePlayer::play() {
             continue;
         }
         AVPacket *packet = av_packet_alloc();
+        if (!packet) {
+            __android_log_print(AV_LOG_INFO,TAG,"push video packet %s","av_packet_alloc error!!!");
+        }
         ret = av_read_frame(formatContext,packet);
         if (ret == 0) {
             if (videoChannel && packet->stream_index == videoChannel->channelId) {
                 __android_log_print(AV_LOG_INFO,TAG,"push video packet %d",videoChannel->pkt_queue.size());
-                videoChannel->pkt_queue.push(packet);
+                videoChannel->pkt_queue.enQueue(packet);
             }
             if (audioChannel && packet->stream_index == audioChannel->channelId) {
-                audioChannel->pkt_queue.push(packet);
+                __android_log_print(AV_LOG_INFO,TAG,"push audio packet %d",audioChannel->pkt_queue.size());
+                //audioChannel->pkt_queue.enQueue(packet);
             }
         } else if (ret == AVERROR_EOF) { //播放完毕
             if (videoChannel->pkt_queue.empty() && videoChannel->frame_queue.empty()
@@ -131,8 +135,10 @@ void NativePlayer::play() {
         }
     }
     isPlaying = false;
-    audioChannel->stop();
-    audioChannel->stop();
+    if (audioChannel)
+        audioChannel->stop();
+    if (videoChannel)
+        videoChannel->stop();
 }
 
 void NativePlayer::start() {

@@ -6,7 +6,8 @@
 
 AudioChannel::AudioChannel(int id, CallJavaHelper *javaHelper, AVCodecContext *codecContext)
         : BaseChannel(id, javaHelper, codecContext) {
-
+    pkt_queue.setReleaseCallback(releasePacket);
+    frame_queue.setReleaseCallback(releaseFrame);
 }
 
 AudioChannel::~AudioChannel() {
@@ -14,7 +15,9 @@ AudioChannel::~AudioChannel() {
 }
 
 void AudioChannel::play() {
-
+    pkt_queue.setWork(1);
+    frame_queue.setWork(1);
+    isPlaying = true;
 }
 
 void AudioChannel::stop() {

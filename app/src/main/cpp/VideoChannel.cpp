@@ -7,7 +7,8 @@
 
 VideoChannel::VideoChannel(int id, CallJavaHelper *javaHelper, AVCodecContext *codecContext)
         : BaseChannel(id, javaHelper, codecContext) {
-
+    pkt_queue.setReleaseCallback(releasePacket);
+    frame_queue.setReleaseCallback(releaseFrame);
 }
 
 VideoChannel::~VideoChannel() {
@@ -29,7 +30,7 @@ void VideoChannel::decodePacket() {
     //消费者线程，消费来自NativePlayer的packet
     AVPacket *packet = 0;
     while (isPlaying) {
-        int ret = pkt_queue.pop(packet);
+        int ret = pkt_queue.deQueue(packet);
         if (!isPlaying) {
             break;
         }
@@ -46,7 +47,7 @@ void VideoChannel::decodePacket() {
 
         AVFrame *frame = av_frame_alloc();
         ret = avcodec_receive_frame(avCodecContext, frame);
-        frame_queue.push(frame);
+        frame_queue.enQueue(frame);
         while (frame_queue.size() > 100 && isPlaying) {
             av_usleep(1000 * 10);
             continue;
@@ -67,7 +68,7 @@ void VideoChannel::syncFrame() {
                    AV_PIX_FMT_RGBA, 1);
     AVFrame *frame = 0;
     while(isPlaying) {
-        int ret = frame_queue.pop(frame);
+        int ret = frame_queue.deQueue(frame);
         if (!isPlaying) {
             break;
         }
@@ -97,20 +98,6 @@ void VideoChannel::play() {
 
 void VideoChannel::stop() {
 
-}
-
-void VideoChannel::releasePacket(AVPacket *pPacket) {
-    if (pPacket) {
-        av_packet_free(&pPacket);
-        pPacket = 0;
-    }
-}
-
-void VideoChannel::releaseFrame(AVFrame *frame) {
-    if (frame) {
-        av_frame_free(&frame);
-        frame = 0;
-    }
 }
 
 void VideoChannel::setRenderFrame(RenderFrame func) {

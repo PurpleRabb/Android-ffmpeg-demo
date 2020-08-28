@@ -29,8 +29,6 @@ public:
 private:
     pthread_t pid_video_play; //解码线程(消费者线程)
     pthread_t pid_sync; //绘制线程
-    inline void releasePacket(AVPacket *pPacket);
-    inline void releaseFrame(AVFrame *frame);
     RenderFrame renderFrame;
 };
 #endif //FFMPEGDEMO_VIDEOCHANNEL_H
