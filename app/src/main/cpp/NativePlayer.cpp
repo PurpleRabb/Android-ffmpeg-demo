@@ -121,7 +121,7 @@ void NativePlayer::play() {
             }
             if (audioChannel && packet->stream_index == audioChannel->channelId) {
                 __android_log_print(AV_LOG_INFO,TAG,"push audio packet %d",audioChannel->pkt_queue.size());
-                //audioChannel->pkt_queue.enQueue(packet);
+                audioChannel->pkt_queue.enQueue(packet);
             }
         } else if (ret == AVERROR_EOF) { //播放完毕
             if (videoChannel->pkt_queue.empty() && videoChannel->frame_queue.empty()

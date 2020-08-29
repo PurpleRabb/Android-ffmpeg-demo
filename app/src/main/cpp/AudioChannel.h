@@ -7,6 +7,9 @@
 
 #include <SLES/OpenSLES.h>
 #include <SLES/OpenSLES_Android.h>
+extern "C" {
+#include <libswresample/swresample.h>
+}
 
 #include "BaseChannel.h"
 
@@ -21,8 +24,17 @@ public:
 
     void audio_decode();
 
+    int getPcm();
+
+    uint8_t *buffer;
 private:
     pthread_t pid_audioinit;
     pthread_t pid_decode;
+
+    SwrContext *swrContext = nullptr;
+    int out_channels;
+    int sample_size;
+    int sample_rate;
+
 };
 #endif //FFMPEGDEMO_AUDIOCHANNEL_H
