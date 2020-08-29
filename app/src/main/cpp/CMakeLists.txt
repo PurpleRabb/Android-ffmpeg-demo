@@ -45,4 +45,7 @@ target_link_libraries( # Specifies the target library.
                        android
                        # Links the target library to the log library
                        # included in the NDK.
+                       z
+                       OpenSLES
+                       android
                        ${log-lib} )
