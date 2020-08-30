@@ -13,7 +13,8 @@ extern "C" {
 
 class BaseChannel {
 public:
-    BaseChannel(int id,CallJavaHelper *javaHelper,AVCodecContext *codecContext);
+    BaseChannel(int id, CallJavaHelper *javaHelper, AVCodecContext *codecContext,AVRational time_base);
+
     virtual ~BaseChannel();
     virtual void play() = 0;
     virtual void stop() = 0;
@@ -27,6 +28,8 @@ public:
     CallJavaHelper *javaHelper;
     AVCodecContext *avCodecContext;
     SafeQueue<AVPacket *> pkt_queue;
+    AVRational time_base;
+    double clock = 0;
 };
 
 #endif //FFMPEGDEMO_BASECHANNEL_H

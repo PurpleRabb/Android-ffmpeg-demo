@@ -4,8 +4,8 @@
 
 #include "BaseChannel.h"
 
-BaseChannel::BaseChannel(int id, CallJavaHelper *javaHelper, AVCodecContext *codecContext)
-        : channelId(id), javaHelper(javaHelper), avCodecContext(codecContext) {
+BaseChannel::BaseChannel(int id, CallJavaHelper *javaHelper, AVCodecContext *codecContext, AVRational time_base)
+        : channelId(id), javaHelper(javaHelper), avCodecContext(codecContext),time_base(time_base) {
 
 }
 

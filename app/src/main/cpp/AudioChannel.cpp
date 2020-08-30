@@ -21,8 +21,8 @@ void *audiodecode(void *argv) {
     return 0;
 }
 
-AudioChannel::AudioChannel(int id, CallJavaHelper *javaHelper, AVCodecContext *codecContext)
-        : BaseChannel(id, javaHelper, codecContext) {
+AudioChannel::AudioChannel(int id, CallJavaHelper *javaHelper, AVCodecContext *codecContext, AVRational time_base)
+        : BaseChannel(id, javaHelper, codecContext, time_base) {
     this->javaHelper = javaHelper;
     this->avCodecContext = avCodecContext;
 
@@ -234,6 +234,8 @@ int AudioChannel::getPcm() {
         int nb = swr_convert(swrContext, &buffer, dst_nb_samples,
                              (const uint8_t **) (frame->data), frame->nb_samples);
         data_size = nb * out_channels * sample_size;
+        clock = frame->pts * av_q2d(time_base);
+        LOGI("### clock = %f",clock);
         break;
     }
     return data_size;

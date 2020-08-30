@@ -5,8 +5,9 @@
 #include "VideoChannel.h"
 #include "common.h"
 
-VideoChannel::VideoChannel(int id, CallJavaHelper *javaHelper, AVCodecContext *codecContext)
-        : BaseChannel(id, javaHelper, codecContext) {
+VideoChannel::VideoChannel(int id, CallJavaHelper *javaHelper, AVCodecContext *codecContext,
+                           AVRational time_base)
+        : BaseChannel(id, javaHelper, codecContext, time_base) {
     pkt_queue.setReleaseCallback(releasePacket);
     frame_queue.setReleaseCallback(releaseFrame);
 }
@@ -67,7 +68,7 @@ void VideoChannel::syncFrame() {
     av_image_alloc(dst_data, dst_linesize, avCodecContext->width, avCodecContext->height,
                    AV_PIX_FMT_RGBA, 1);
     AVFrame *frame = 0;
-    while(isPlaying) {
+    while (isPlaying) {
         int ret = frame_queue.deQueue(frame);
         if (!isPlaying) {
             break;
@@ -75,11 +76,25 @@ void VideoChannel::syncFrame() {
         if (!ret) {
             continue;
         }
-        sws_scale(swsContext, reinterpret_cast<const uint8_t *const *>(frame->data),frame->linesize,0,
-                frame->height,dst_data,dst_linesize);
+        sws_scale(swsContext, reinterpret_cast<const uint8_t *const *>(frame->data),
+                  frame->linesize, 0,
+                  frame->height, dst_data, dst_linesize);
         //回调渲染
-        renderFrame(dst_data[0],dst_linesize[0],avCodecContext->width,avCodecContext->height);
-        av_usleep(30 * 1000);//30帧/s
+        renderFrame(dst_data[0], dst_linesize[0], avCodecContext->width, avCodecContext->height);
+        //这里根据音频的clock开始同步
+
+        clock = frame->pts * av_q2d(time_base);
+        double audioClock = this->audioChannel->clock;
+        double diff = clock - audioClock;
+        double frame_delay = 1.0 / this->fps;
+        if (clock > audioClock) { //视频播的快
+
+        } else {
+
+        }
+        LOGI("xxxxfps=%d,xxxxdiff=%f",this->fps,diff);
+        //av_usleep(30 * 1000);//30帧/s
+        av_usleep((frame_delay + diff) * 1000000);
         releaseFrame(frame);
     }
     av_freep(&dst_data[0]);
@@ -96,12 +111,18 @@ void VideoChannel::play() {
     pthread_create(&pid_sync, nullptr, _syncframe, this);
 }
 
+
 void VideoChannel::stop() {
 
 }
 
 void VideoChannel::setRenderFrame(RenderFrame func) {
     this->renderFrame = func;
+}
+
+void VideoChannel::setFps(int fps) {
+    this->fps = fps;
+    LOGI("this->fps=%d",fps);
 }
 
 

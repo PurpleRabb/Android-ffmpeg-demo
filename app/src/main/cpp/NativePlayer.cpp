@@ -47,6 +47,7 @@ void NativePlayer::realPrepare() {
 
     for (int i = 0; i < formatContext->nb_streams; i++) {
         AVCodecParameters *codecParameters = formatContext->streams[i]->codecpar;
+        AVStream *curStream = formatContext->streams[i];
         //找到解码器
         AVCodec *dec = avcodec_find_decoder(codecParameters->codec_id);
         if (!dec) {
@@ -75,12 +76,17 @@ void NativePlayer::realPrepare() {
         }
 
         if (formatContext->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
-            videoChannel = new VideoChannel(i, javaHelper, codecContext);
+            videoChannel = new VideoChannel(i, javaHelper, codecContext, curStream->time_base);
+            AVRational frame_rate = curStream->avg_frame_rate;
+            int fps = av_q2d(frame_rate);
+            LOGI("den=%d,num=%d,fps=%d",frame_rate.den,frame_rate.num,fps);
+            videoChannel->setFps(fps);
             videoChannel->setRenderFrame(this->renderFrame);
         }
 
         if (formatContext->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_AUDIO) {
-            audioChannel = new AudioChannel(i, javaHelper, codecContext);
+            audioChannel = new AudioChannel(i, javaHelper, codecContext, curStream->time_base);
+            videoChannel->audioChannel = audioChannel;
         }
     }
 
