@@ -5,11 +5,38 @@
 #include "VideoChannel.h"
 #include "common.h"
 
+void dropPacket(queue<AVPacket *> &queue) {
+    LOGI("drop unkey packet.....");
+    while (!queue.empty()){
+
+        AVPacket* pkt = queue.front();
+        if(pkt->flags != AV_PKT_FLAG_KEY){
+            queue.pop();
+            BaseChannel::releasePacket(pkt);
+        }else{
+            break;
+        }
+    }
+}
+
+void dropFrame(queue<AVFrame *> &queue) {
+    LOGI("drop Frame.....");
+    while (!queue.empty()){
+        AVFrame* frame = queue.front();
+        queue.pop();
+        BaseChannel::releaseFrame(frame);
+    }
+}
+
 VideoChannel::VideoChannel(int id, CallJavaHelper *javaHelper, AVCodecContext *codecContext,
                            AVRational time_base)
         : BaseChannel(id, javaHelper, codecContext, time_base) {
+
     pkt_queue.setReleaseCallback(releasePacket);
+    pkt_queue.setSyncHandle(dropPacket);
     frame_queue.setReleaseCallback(releaseFrame);
+    frame_queue.setSyncHandle(dropFrame);
+
 }
 
 VideoChannel::~VideoChannel() {
@@ -87,16 +114,34 @@ void VideoChannel::syncFrame() {
         double audioClock = this->audioChannel->clock;
         double diff = clock - audioClock;
         double frame_delay = 1.0 / this->fps;
+        double extra_delay = frame->repeat_pict / 2 * this->fps; //解码一帧花费的时间
+        double delay = extra_delay + frame_delay;
+        LOGI("fps=%d,diff=%f", this->fps, diff);
+
         if (clock > audioClock) { //视频播的快
-
-        } else {
-
+            if (diff > 1) {
+                //相差大
+                av_usleep((2 * delay) * 1000000);
+            } else {
+                //正常休眠
+                av_usleep((delay + diff) * 1000000);
+            }
+        } else {  //音频超前
+            if (abs(diff) > 1) {
+                //不休眠，尽量让视频追赶
+            } else if (abs(diff) > 0.05) {
+                //丢弃视频非关键帧来节省视频解码时间
+                releaseFrame(frame);
+                frame_queue.sync();
+            } else {
+                av_usleep((delay + diff) * 1000000);
+            }
         }
-        LOGI("xxxxfps=%d,xxxxdiff=%f",this->fps,diff);
+
         //av_usleep(30 * 1000);//30帧/s
-        av_usleep((frame_delay + diff) * 1000000);
         releaseFrame(frame);
     }
+
     av_freep(&dst_data[0]);
     isPlaying = false;
     releaseFrame(frame);
@@ -122,7 +167,7 @@ void VideoChannel::setRenderFrame(RenderFrame func) {
 
 void VideoChannel::setFps(int fps) {
     this->fps = fps;
-    LOGI("this->fps=%d",fps);
+    LOGI("this->fps=%d", fps);
 }
 
 

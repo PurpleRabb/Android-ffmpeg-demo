@@ -16,7 +16,7 @@ class MainActivity : AppCompatActivity() {
 
     private var dataSource = "someplaces"
     lateinit var ffPlayerViewModel : FFPlayerViewModel
-    private val TAG = "ffmplayer"
+    private val TAG = "###ffmplayer"
     private lateinit var ffPlayer : FFPlayer
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,11 +56,22 @@ class MainActivity : AppCompatActivity() {
             //}
         })
 
+        ffPlayerViewModel.playStatus.observe(this, Observer {
+            when (it) {
+                PlayStatus.PLAYING ->  {
+
+                    Log.i(TAG, "start playing")
+                }
+            }
+        })
+
         controlButton.setOnClickListener {
             //val file : AssetFileDescriptor = application.getResources().openRawResourceFd(R.raw.cup)
-            Log.i(TAG,getExternalFilesDir(null)?.absolutePath.toString()+"/cup.mp4")
-            //Log.i(TAG,Environment.getExternalStorageDirectory().absolutePath+"/test.mp4");
-            ffPlayer.nativePrepare(getExternalFilesDir(null)?.absolutePath.toString()+"/test.mp4")
+            if (ffPlayer.getStatus() == PlayStatus.STOP) {
+                Log.i(TAG,getExternalFilesDir(null)?.absolutePath.toString()+"/test.mp4")
+                //Log.i(TAG,Environment.getExternalStorageDirectory().absolutePath+"/test.mp4");
+                ffPlayer.nativePrepare(getExternalFilesDir(null)?.absolutePath.toString()+"/test.mp4")
+            }
         }
     }
 }

@@ -5,7 +5,6 @@ import android.view.SurfaceHolder
 import android.view.SurfaceView
 
 class FFPlayer {
-
     init {
         System.loadLibrary("mediaplayerlib")
     }
@@ -26,6 +25,7 @@ class FFPlayer {
     private var onPrepareListener : OnPrepareListener? = null
     private var onProgressListener : OnProgressListener? = null
     private var onErrorListener : OnErrorListener? = null
+    private var status : PlayStatus = PlayStatus.STOP
 
     public fun setSurfaceView(surfaceView: SurfaceView) {
         surfaceHolder = surfaceView.holder
@@ -73,8 +73,17 @@ class FFPlayer {
         this.onErrorListener?.onError(error)
     }
 
+    fun setStatus(status: PlayStatus) {
+        this.status = status
+    }
+
+    fun getStatus() : PlayStatus{
+        return this.status
+    }
+
     external fun nativePrepare(dataSource : String)
     external fun nativeStart()
     external fun nativeSetSurface(surface : Surface)
+
 }
 
