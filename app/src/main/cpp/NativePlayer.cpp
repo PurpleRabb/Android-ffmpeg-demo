@@ -164,8 +164,8 @@ void NativePlayer::start() {
 
 void NativePlayer::pause() {
     isPause = true;
-    audioChannel->pause();
     videoChannel->pause();
+    audioChannel->pause();
 }
 
 void NativePlayer::resume() {

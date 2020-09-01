@@ -20,13 +20,13 @@ public:
     virtual void stop() = 0;
     virtual void pause() {
         isPause = true;
-        //frame_queue.setWork(0);
-        //pkt_queue.setWork(0);
+        frame_queue.setWork(0);
+        pkt_queue.setWork(0);
     };
     virtual void resume() {
         isPause = false;
-        //frame_queue.setWork(1);
-        //pkt_queue.setWork(1);
+        frame_queue.setWork(1);
+        pkt_queue.setWork(1);
     };
 
     static void releasePacket(AVPacket *&pPacket);

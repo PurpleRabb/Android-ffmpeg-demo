@@ -184,6 +184,9 @@ void AudioChannel::audio_init() {
 void AudioChannel::audio_decode() {
     AVPacket *avPacket;
     while (isPlaying) {
+        if (isPause) {
+            continue;
+        }
         int ret = pkt_queue.deQueue(avPacket);
         if (!isPlaying) {
             break;

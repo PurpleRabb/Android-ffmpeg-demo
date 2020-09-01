@@ -58,6 +58,9 @@ void VideoChannel::decodePacket() {
     //消费者线程，消费来自NativePlayer的packet
     AVPacket *packet = 0;
     while (isPlaying) {
+        if (isPause) {
+            continue;
+        }
         int ret = pkt_queue.deQueue(packet);
         if (!isPlaying) {
             break;
@@ -135,7 +138,7 @@ void VideoChannel::syncFrame() {
             if (abs(diff) > 1) {
                 LOGI("----------3--------------");
                 //不休眠，尽量让视频追赶
-            } else if (abs(diff) > 0.05) {
+            } else if (abs(diff) > 0.1) {
                 LOGI("----------4--------------");
                 //丢弃视频非关键帧来节省视频解码时间
                 releaseFrame(frame);
