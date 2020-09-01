@@ -70,3 +70,19 @@ Java_com_example_ffmpegdemo_FFPlayer_nativeSetSurface(JNIEnv *env, jobject thiz,
     __android_log_print(ANDROID_LOG_INFO, TAG, "%s\n", __func__);
     nativeWindow = ANativeWindow_fromSurface(env, surface);
 }
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_example_ffmpegdemo_FFPlayer_nativePause(JNIEnv *env, jobject thiz) {
+    // TODO: implement nativePause()
+    LOGI("%s",__func__);
+    nativePlayer->pause();
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_example_ffmpegdemo_FFPlayer_nativeResume(JNIEnv *env, jobject thiz) {
+    // TODO: implement nativeResume()
+    LOGI("%s",__func__);
+    nativePlayer->resume();
+}

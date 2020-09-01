@@ -61,7 +61,7 @@ void AudioChannel::play() {
 }
 
 void AudioChannel::stop() {
-    isPlaying = false;
+
 }
 
 void AudioChannel::audio_init() {
@@ -218,6 +218,9 @@ int AudioChannel::getPcm() {
     AVFrame *frame;
     int data_size;
     while (isPlaying) {
+        if (isPause) {
+            continue;
+        }
         int ret = frame_queue.deQueue(frame);
         if (!isPlaying) {
             break;
@@ -235,7 +238,6 @@ int AudioChannel::getPcm() {
                              (const uint8_t **) (frame->data), frame->nb_samples);
         data_size = nb * out_channels * sample_size;
         clock = frame->pts * av_q2d(time_base);
-        LOGI("### clock = %f",clock);
         break;
     }
     return data_size;

@@ -30,6 +30,7 @@ class MainActivity : AppCompatActivity() {
         ffPlayerViewModel.setPlayer(ffPlayer)
         ffPlayer.setSurfaceView(surfaceView)
         lifecycle.addObserver(ffPlayerViewModel)
+
         seekBar.setOnSeekBarChangeListener( object : OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
 
@@ -59,7 +60,6 @@ class MainActivity : AppCompatActivity() {
         ffPlayerViewModel.playStatus.observe(this, Observer {
             when (it) {
                 PlayStatus.PLAYING ->  {
-
                     Log.i(TAG, "start playing")
                 }
             }
@@ -67,11 +67,13 @@ class MainActivity : AppCompatActivity() {
 
         controlButton.setOnClickListener {
             //val file : AssetFileDescriptor = application.getResources().openRawResourceFd(R.raw.cup)
-            if (ffPlayer.getStatus() == PlayStatus.STOP) {
-                Log.i(TAG,getExternalFilesDir(null)?.absolutePath.toString()+"/test.mp4")
-                //Log.i(TAG,Environment.getExternalStorageDirectory().absolutePath+"/test.mp4");
-                ffPlayer.nativePrepare(getExternalFilesDir(null)?.absolutePath.toString()+"/test.mp4")
-            }
+            ffPlayer.setUri(getExternalFilesDir(null)?.absolutePath.toString()+"/test.mp4")
+            ffPlayer.switchStatus()
+//            if (ffPlayer.getStatus() == PlayStatus.STOP) {
+//                Log.i(TAG,getExternalFilesDir(null)?.absolutePath.toString()+"/test.mp4")
+//                //Log.i(TAG,Environment.getExternalStorageDirectory().absolutePath+"/test.mp4");
+//                ffPlayer.nativePrepare(getExternalFilesDir(null)?.absolutePath.toString()+"/test.mp4")
+//            }
         }
     }
 }

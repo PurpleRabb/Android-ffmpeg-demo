@@ -26,6 +26,7 @@ class FFPlayer {
     private var onProgressListener : OnProgressListener? = null
     private var onErrorListener : OnErrorListener? = null
     private var status : PlayStatus = PlayStatus.STOP
+    private lateinit var dataSource : String
 
     public fun setSurfaceView(surfaceView: SurfaceView) {
         surfaceHolder = surfaceView.holder
@@ -81,9 +82,31 @@ class FFPlayer {
         return this.status
     }
 
+    fun switchStatus() {
+        when (status) {
+            PlayStatus.PAUSE -> {
+                status = PlayStatus.PLAYING
+                nativeResume()
+            }
+            PlayStatus.PLAYING -> {
+                status = PlayStatus.PAUSE
+                nativePause()
+            }
+            PlayStatus.STOP -> {
+                status = PlayStatus.PLAYING
+                nativePrepare(dataSource)
+            }
+        }
+    }
+
+    fun setUri(s: String) {
+        dataSource = s
+    }
+
     external fun nativePrepare(dataSource : String)
     external fun nativeStart()
     external fun nativeSetSurface(surface : Surface)
-
+    external fun nativePause()
+    external fun nativeResume()
 }
 

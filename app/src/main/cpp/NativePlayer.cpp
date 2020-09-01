@@ -105,6 +105,9 @@ void *startThread(void *argv) {
 void NativePlayer::play() {
     int ret = 0;
     while(isPlaying) {
+        if (isPause) {
+            continue;
+        }
         //生产者线程
         if (audioChannel && audioChannel->pkt_queue.size() > 100) {
             //避免生产太快，消费太慢，队列崩溃
@@ -157,6 +160,18 @@ void NativePlayer::start() {
         audioChannel->play();
     }
     pthread_create(&play_pid, nullptr,startThread,this);
+}
+
+void NativePlayer::pause() {
+    isPause = true;
+    audioChannel->pause();
+    videoChannel->pause();
+}
+
+void NativePlayer::resume() {
+    isPause = false;
+    audioChannel->resume();
+    videoChannel->resume();
 }
 
 void NativePlayer::report_error_to_java(int thread_env, int error_code) {

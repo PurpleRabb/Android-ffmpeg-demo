@@ -19,6 +19,7 @@ public:
     VideoChannel(int id, CallJavaHelper *javaHelper, AVCodecContext *codecContext, AVRational time_base);
     ~VideoChannel();
     void play();
+
     void stop();
 
     void decodePacket();

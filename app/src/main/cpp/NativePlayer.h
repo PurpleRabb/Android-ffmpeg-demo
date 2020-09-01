@@ -31,6 +31,10 @@ public:
 
     void play();
 
+    void pause();
+
+    void resume();
+
     void setRenderFrameCallBack(void (*fun)(uint8_t *, int, int, int));
 
 private:
@@ -45,6 +49,7 @@ private:
     AudioChannel *audioChannel;
     RenderFrame renderFrame;
     bool isPlaying;
+    bool isPause = false;
     char *url;
 };
 

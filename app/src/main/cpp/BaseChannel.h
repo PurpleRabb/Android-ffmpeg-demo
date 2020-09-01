@@ -18,6 +18,16 @@ public:
     virtual ~BaseChannel();
     virtual void play() = 0;
     virtual void stop() = 0;
+    virtual void pause() {
+        isPause = true;
+        //frame_queue.setWork(0);
+        //pkt_queue.setWork(0);
+    };
+    virtual void resume() {
+        isPause = false;
+        //frame_queue.setWork(1);
+        //pkt_queue.setWork(1);
+    };
 
     static void releasePacket(AVPacket *&pPacket);
     static void releaseFrame(AVFrame *&frame);
@@ -25,6 +35,7 @@ public:
     SafeQueue<AVFrame *> frame_queue;
     volatile int channelId;
     volatile bool isPlaying;
+    volatile bool isPause = false;
     CallJavaHelper *javaHelper;
     AVCodecContext *avCodecContext;
     SafeQueue<AVPacket *> pkt_queue;

@@ -18,6 +18,7 @@ public:
     AudioChannel(int id, CallJavaHelper *javaHelper, AVCodecContext *codecContext, AVRational time_base);
     ~AudioChannel();
     void play();
+
     void stop();
 
     void audio_init();

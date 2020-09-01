@@ -96,6 +96,9 @@ void VideoChannel::syncFrame() {
                    AV_PIX_FMT_RGBA, 1);
     AVFrame *frame = 0;
     while (isPlaying) {
+        if (isPause) {
+            continue;
+        }
         int ret = frame_queue.deQueue(frame);
         if (!isPlaying) {
             break;
@@ -121,19 +124,24 @@ void VideoChannel::syncFrame() {
         if (clock > audioClock) { //视频播的快
             if (diff > 1) {
                 //相差大
+                LOGI("----------1--------------");
                 av_usleep((2 * delay) * 1000000);
             } else {
                 //正常休眠
+                LOGI("----------2--------------");
                 av_usleep((delay + diff) * 1000000);
             }
         } else {  //音频超前
             if (abs(diff) > 1) {
+                LOGI("----------3--------------");
                 //不休眠，尽量让视频追赶
             } else if (abs(diff) > 0.05) {
+                LOGI("----------4--------------");
                 //丢弃视频非关键帧来节省视频解码时间
                 releaseFrame(frame);
                 frame_queue.sync();
             } else {
+                LOGI("----------5--------------");
                 av_usleep((delay + diff) * 1000000);
             }
         }
@@ -169,5 +177,3 @@ void VideoChannel::setFps(int fps) {
     this->fps = fps;
     LOGI("this->fps=%d", fps);
 }
-
-
