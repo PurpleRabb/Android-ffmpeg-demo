@@ -1,36 +1,32 @@
 package com.example.ffmpegdemo
 
-import android.content.res.AssetFileDescriptor
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Environment
 import android.util.Log
-import android.view.View
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import kotlinx.android.synthetic.main.activity_main.*
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
     private var dataSource = "someplaces"
     lateinit var ffPlayerViewModel : FFPlayerViewModel
-    private val TAG = "###ffmplayer"
+    private val TAG = "java_ffmplayer"
     private lateinit var ffPlayer : FFPlayer
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-//        galleryViewModel = ViewModelProvider(
-//            requireActivity(),
-//            SavedStateViewModelFactory(requireActivity().application, this)
-//        ).get(GalleryViewModel::class.java)
-        ffPlayerViewModel = ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory(this.application)).get(FFPlayerViewModel::class.java)
-        ffPlayer = FFPlayer()
-        ffPlayerViewModel.setPlayer(ffPlayer)
-        ffPlayer.setSurfaceView(surfaceView)
-        lifecycle.addObserver(ffPlayerViewModel)
 
+        ffPlayerViewModel = ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory(this.application)).get(FFPlayerViewModel::class.java)
+        ffPlayerViewModel.setSurfaceView(surfaceView)
+
+        lifecycle.addObserver(ffPlayerViewModel)
+        seekBar.max = 100
         seekBar.setOnSeekBarChangeListener( object : OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
 
@@ -44,6 +40,7 @@ class MainActivity : AppCompatActivity() {
 
             }
         })
+        updateMediaProgress()
 
         ffPlayerViewModel.error.observe(this, Observer {
             //when (it) {  //test code
@@ -62,18 +59,26 @@ class MainActivity : AppCompatActivity() {
                 PlayStatus.PLAYING ->  {
                     Log.i(TAG, "start playing")
                 }
+                PlayStatus.STOP -> {
+                    Log.i(TAG, "stopped")
+                    seekBar.progress = seekBar.max
+                }
             }
         })
 
         controlButton.setOnClickListener {
-            //val file : AssetFileDescriptor = application.getResources().openRawResourceFd(R.raw.cup)
-            ffPlayer.setUri(getExternalFilesDir(null)?.absolutePath.toString()+"/test.mp4")
-            ffPlayer.switchStatus()
-//            if (ffPlayer.getStatus() == PlayStatus.STOP) {
-//                Log.i(TAG,getExternalFilesDir(null)?.absolutePath.toString()+"/test.mp4")
-//                //Log.i(TAG,Environment.getExternalStorageDirectory().absolutePath+"/test.mp4");
-//                ffPlayer.nativePrepare(getExternalFilesDir(null)?.absolutePath.toString()+"/test.mp4")
-//            }
+            ffPlayerViewModel.ffPlayer.setUri(getExternalFilesDir(null)?.absolutePath.toString()+"/test.mp4")
+            ffPlayerViewModel.ffPlayer.switchStatus()
+        }
+    }
+
+
+    private fun updateMediaProgress() {
+        lifecycleScope.launch {
+            while(true) {
+                delay(800)
+                seekBar.progress = ffPlayerViewModel.ffPlayer.getProgress()
+            }
         }
     }
 }

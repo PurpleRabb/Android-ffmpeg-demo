@@ -37,8 +37,11 @@ public:
 
     void setRenderFrameCallBack(void (*fun)(uint8_t *, int, int, int));
 
+    double getCurrentPosition();
+
 private:
     void report_error_to_java(int thread_env,int error_code);
+    void report_progress_to_java(int thread_env, int progress);
 
 private:
     pthread_t prepare_pid;
@@ -50,6 +53,7 @@ private:
     RenderFrame renderFrame;
     bool isPlaying;
     bool isPause = false;
+    int64_t duration = 0; //视频时间
     char *url;
 };
 

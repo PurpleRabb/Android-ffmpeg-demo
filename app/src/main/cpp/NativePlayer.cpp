@@ -78,9 +78,11 @@ void NativePlayer::realPrepare() {
         if (formatContext->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
             videoChannel = new VideoChannel(i, javaHelper, codecContext, curStream->time_base);
             AVRational frame_rate = curStream->avg_frame_rate;
+            duration = formatContext->duration; //微秒
             int fps = av_q2d(frame_rate);
-            LOGI("den=%d,num=%d,fps=%d",frame_rate.den,frame_rate.num,fps);
+            LOGI("den=%d,num=%d,fps=%d,duration=%ld",frame_rate.den,frame_rate.num,fps,duration);
             videoChannel->setFps(fps);
+            videoChannel->setDuration(duration);
             videoChannel->setRenderFrame(this->renderFrame);
         }
 
@@ -135,6 +137,7 @@ void NativePlayer::play() {
         } else if (ret == AVERROR_EOF) { //播放完毕
             if (videoChannel->pkt_queue.empty() && videoChannel->frame_queue.empty()
                     && audioChannel->pkt_queue.empty() && audioChannel->frame_queue.empty()) {
+                report_progress_to_java(CHILD_THREAD,1);
                 __android_log_print(AV_LOG_INFO,TAG,"%s","play eof");
                 break;
             }
@@ -180,6 +183,13 @@ void NativePlayer::report_error_to_java(int thread_env, int error_code) {
     }
 }
 
+
+void NativePlayer::report_progress_to_java(int thread_env,int progress) {
+    if (javaHelper) {
+        javaHelper->onProgress(thread_env,progress);
+    }
+}
+
 NativePlayer::~NativePlayer() {
     delete url;
 }
@@ -187,4 +197,12 @@ NativePlayer::~NativePlayer() {
 void NativePlayer::setRenderFrameCallBack(void (*fun)(uint8_t *, int, int, int)) {
     this->renderFrame = fun; //暂存
 }
+
+double NativePlayer::getCurrentPosition() {
+    if (videoChannel != nullptr) {
+        return videoChannel->getCurrentPosition();
+    }
+    return 0;
+}
+
 

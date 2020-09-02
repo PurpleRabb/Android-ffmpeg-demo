@@ -30,11 +30,17 @@ public:
 
     void setFps(int fps);
 
+    void setDuration(int64_t duration);
+
+    double getCurrentPosition();
+
     AudioChannel *audioChannel;
 private:
     pthread_t pid_video_play; //解码线程(消费者线程)
     pthread_t pid_sync; //绘制线程
     RenderFrame renderFrame;
     int fps;
+    int64_t duration;
+    double position = 0;
 };
 #endif //FFMPEGDEMO_VIDEOCHANNEL_H

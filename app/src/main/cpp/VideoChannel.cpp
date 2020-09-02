@@ -7,13 +7,13 @@
 
 void dropPacket(queue<AVPacket *> &queue) {
     LOGI("drop unkey packet.....");
-    while (!queue.empty()){
+    while (!queue.empty()) {
 
-        AVPacket* pkt = queue.front();
-        if(pkt->flags != AV_PKT_FLAG_KEY){
+        AVPacket *pkt = queue.front();
+        if (pkt->flags != AV_PKT_FLAG_KEY) {
             queue.pop();
             BaseChannel::releasePacket(pkt);
-        }else{
+        } else {
             break;
         }
     }
@@ -21,8 +21,8 @@ void dropPacket(queue<AVPacket *> &queue) {
 
 void dropFrame(queue<AVFrame *> &queue) {
     LOGI("drop Frame.....");
-    while (!queue.empty()){
-        AVFrame* frame = queue.front();
+    while (!queue.empty()) {
+        AVFrame *frame = queue.front();
         queue.pop();
         BaseChannel::releaseFrame(frame);
     }
@@ -122,7 +122,8 @@ void VideoChannel::syncFrame() {
         double frame_delay = 1.0 / this->fps;
         double extra_delay = frame->repeat_pict / 2 * this->fps; //解码一帧花费的时间
         double delay = extra_delay + frame_delay;
-        LOGI("fps=%d,diff=%f", this->fps, diff);
+        position = audioClock*1000*1000/duration;
+        LOGI("fps=%d,diff=%f,audioClock=%lf", this->fps, diff, position);
 
         if (clock > audioClock) { //视频播的快
             if (diff > 1) {
@@ -179,4 +180,12 @@ void VideoChannel::setRenderFrame(RenderFrame func) {
 void VideoChannel::setFps(int fps) {
     this->fps = fps;
     LOGI("this->fps=%d", fps);
+}
+
+void VideoChannel::setDuration(int64_t duration) {
+    this->duration = duration;
+}
+
+double VideoChannel::getCurrentPosition() {
+    return position;
 }

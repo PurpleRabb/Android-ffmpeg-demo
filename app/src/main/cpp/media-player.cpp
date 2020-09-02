@@ -19,6 +19,7 @@ void renderFrame(uint8_t *data, int linesize, int w, int h) {
     __android_log_print(ANDROID_LOG_INFO, TAG, "%s\n", __func__);
     ANativeWindow_setBuffersGeometry(nativeWindow, w, h, WINDOW_FORMAT_RGBA_8888);
     ANativeWindow_Buffer windowBuffer;
+
     if (ANativeWindow_lock(nativeWindow, &windowBuffer, 0)) {
         ANativeWindow_release(nativeWindow);
         nativeWindow = 0;
@@ -85,4 +86,13 @@ Java_com_example_ffmpegdemo_FFPlayer_nativeResume(JNIEnv *env, jobject thiz) {
     // TODO: implement nativeResume()
     LOGI("%s",__func__);
     nativePlayer->resume();
+}
+
+extern "C"
+JNIEXPORT jdouble JNICALL
+Java_com_example_ffmpegdemo_FFPlayer_nativeGetCurrentPosition(JNIEnv *env, jobject thiz) {
+    if (nativePlayer != nullptr) {
+        return nativePlayer->getCurrentPosition();
+    }
+    return 0;
 }
