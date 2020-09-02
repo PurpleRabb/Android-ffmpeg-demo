@@ -17,6 +17,7 @@ class FFPlayerViewModel(application: Application) : AndroidViewModel(application
     private var _error: MutableLiveData<Int> = MutableLiveData()
     private var _progress: MutableLiveData<Int> = MutableLiveData()
     private var _playStatus: MutableLiveData<PlayStatus> = MutableLiveData()
+
     var ffPlayer: FFPlayer = FFPlayer()
 
     var error: LiveData<Int> = _error

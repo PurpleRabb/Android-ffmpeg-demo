@@ -32,29 +32,6 @@ class FFPlayer {
     private lateinit var dataSource: String
 
 
-    public fun setSurfaceView(surfaceView: SurfaceView) {
-        surfaceHolder = surfaceView.holder
-        surfaceHolder.addCallback(object : SurfaceHolder.Callback {
-            override fun surfaceChanged(
-                holder: SurfaceHolder?,
-                format: Int,
-                width: Int,
-                height: Int
-            ) {
-                Log.i("setSurfaceView","surfaceChanged")
-            }
-
-            override fun surfaceDestroyed(holder: SurfaceHolder?) {
-                Log.i("setSurfaceView","surfaceDestroyed")
-            }
-
-            override fun surfaceCreated(holder: SurfaceHolder?) {
-                holder?.surface?.let { nativeSetSurface(it) }
-            }
-
-        })
-    }
-
     fun setOnPrepareListener(listener: OnPrepareListener) {
         onPrepareListener = listener
     }
@@ -129,11 +106,16 @@ class FFPlayer {
         }
     }
 
+    fun setSurfaceView(surfaceView: SurfaceView) {
+        nativeSetSurface(surfaceView.holder.surface)
+    }
+
     external fun nativePrepare(dataSource: String)
     external fun nativeStart()
     external fun nativeSetSurface(surface: Surface)
     external fun nativeGetCurrentPosition(): Double
     external fun nativePause()
     external fun nativeResume()
+
 }
 

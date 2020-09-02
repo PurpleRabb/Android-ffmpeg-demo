@@ -17,6 +17,9 @@ NativePlayer *nativePlayer = nullptr;
 void renderFrame(uint8_t *data, int linesize, int w, int h) {
     //真正的渲染函数
     __android_log_print(ANDROID_LOG_INFO, TAG, "%s\n", __func__);
+    if (nativeWindow == nullptr) {
+        return;
+    }
     ANativeWindow_setBuffersGeometry(nativeWindow, w, h, WINDOW_FORMAT_RGBA_8888);
     ANativeWindow_Buffer windowBuffer;
 

@@ -3,6 +3,8 @@ package com.example.ffmpegdemo
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.SurfaceHolder
+import android.view.SurfaceView
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import androidx.lifecycle.Observer
@@ -17,13 +19,34 @@ class MainActivity : AppCompatActivity() {
     private var dataSource = "someplaces"
     lateinit var ffPlayerViewModel : FFPlayerViewModel
     private val TAG = "java_ffmplayer"
-    private lateinit var ffPlayer : FFPlayer
+    private lateinit var surfaceHolder : SurfaceHolder
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         ffPlayerViewModel = ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory(this.application)).get(FFPlayerViewModel::class.java)
-        ffPlayerViewModel.setSurfaceView(surfaceView)
+
+        surfaceHolder = surfaceView.holder
+        surfaceHolder.addCallback(object : SurfaceHolder.Callback {
+            override fun surfaceChanged(
+                holder: SurfaceHolder?,
+                format: Int,
+                width: Int,
+                height: Int
+            ) {
+                Log.i("setSurfaceView", "surfaceChanged")
+            }
+
+            override fun surfaceDestroyed(holder: SurfaceHolder?) {
+                Log.i("setSurfaceView", "surfaceDestroyed")
+            }
+
+            override fun surfaceCreated(holder: SurfaceHolder?) {
+                Log.i("setSurfaceView", "surfaceCreated")
+                ffPlayerViewModel.setSurfaceView(surfaceView)
+            }
+        })
 
         lifecycle.addObserver(ffPlayerViewModel)
         seekBar.max = 100
