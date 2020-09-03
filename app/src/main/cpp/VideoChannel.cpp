@@ -139,7 +139,7 @@ void VideoChannel::syncFrame() {
             if (abs(diff) > 1) {
                 LOGI("----------3--------------");
                 //不休眠，尽量让视频追赶
-            } else if (abs(diff) > 0.1) {
+            } else if (abs(diff) > 0.5) {
                 LOGI("----------4--------------");
                 //丢弃视频非关键帧来节省视频解码时间
                 releaseFrame(frame);

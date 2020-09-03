@@ -93,6 +93,9 @@ class FFPlayer {
     }
 
     fun resume() {
+        if (pausedByUser) {
+            return
+        }
         if (status == PlayStatus.PAUSE) {
             status = PlayStatus.PLAYING
             nativeResume()
