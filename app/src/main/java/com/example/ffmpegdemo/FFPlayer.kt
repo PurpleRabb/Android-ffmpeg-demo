@@ -27,7 +27,7 @@ class FFPlayer {
     private var onPrepareListener: OnPrepareListener? = null
     private var onProgressListener: OnProgressListener? = null
     private var onErrorListener: OnErrorListener? = null
-    private var status: PlayStatus = PlayStatus.STOP
+    private var status: PlayStatus = PlayStatus.NOT_READY
     private var pausedByUser = false
     private lateinit var dataSource: String
 
@@ -76,6 +76,9 @@ class FFPlayer {
                 pausedByUser = true
                 nativePause()
             }
+            PlayStatus.NOT_READY -> {
+                nativePrepare(dataSource)
+            }
             PlayStatus.STOP -> {
                 status = PlayStatus.PLAYING
                 pausedByUser = false
@@ -113,12 +116,17 @@ class FFPlayer {
         nativeSetSurface(surfaceView.holder.surface)
     }
 
+    fun setProgress(progress: Int) {
+        //("Not yet implemented")
+        nativeSetProgress(progress)
+    }
+
     external fun nativePrepare(dataSource: String)
     external fun nativeStart()
     external fun nativeSetSurface(surface: Surface)
     external fun nativeGetCurrentPosition(): Double
     external fun nativePause()
     external fun nativeResume()
-
+    external fun nativeSetProgress(progress: Int)
 }
 

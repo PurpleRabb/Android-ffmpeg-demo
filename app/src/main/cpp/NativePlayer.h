@@ -37,6 +37,8 @@ public:
 
     void setRenderFrameCallBack(void (*fun)(uint8_t *, int, int, int));
 
+    void seek(int progress);
+
     double getCurrentPosition();
 
 private:

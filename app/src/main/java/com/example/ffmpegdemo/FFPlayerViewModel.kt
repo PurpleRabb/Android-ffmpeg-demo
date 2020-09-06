@@ -9,6 +9,7 @@ enum class PlayStatus {
     PLAYING,
     STOP,
     PAUSE,
+    NOT_READY,
     RESTART
 }
 
@@ -65,5 +66,9 @@ class FFPlayerViewModel(application: Application) : AndroidViewModel(application
     fun resumePlayer() {
         Log.i("ffmplayer", "resumePlayer: ")
         ffPlayer.resume();
+    }
+
+    fun setProgress(progress: Int) {
+        ffPlayer.setProgress(progress)
     }
 }

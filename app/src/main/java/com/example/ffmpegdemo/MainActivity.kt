@@ -20,6 +20,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var ffPlayerViewModel : FFPlayerViewModel
     private val TAG = "java_ffmplayer"
     private lateinit var surfaceHolder : SurfaceHolder
+    private var isSeek = false;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,6 +37,7 @@ class MainActivity : AppCompatActivity() {
                 height: Int
             ) {
                 Log.i("setSurfaceView", "surfaceChanged")
+                ffPlayerViewModel.setSurfaceView(surfaceView)
             }
 
             override fun surfaceDestroyed(holder: SurfaceHolder?) {
@@ -44,7 +46,7 @@ class MainActivity : AppCompatActivity() {
 
             override fun surfaceCreated(holder: SurfaceHolder?) {
                 Log.i("setSurfaceView", "surfaceCreated")
-                ffPlayerViewModel.setSurfaceView(surfaceView)
+                //ffPlayerViewModel.setSurfaceView(surfaceView)
             }
         })
 
@@ -56,11 +58,14 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
-
+                isSeek = true
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
-
+                isSeek = false
+                if (seekBar != null) {
+                    ffPlayerViewModel.setProgress(seekBar.progress)
+                }
             }
         })
         updateMediaProgress()
@@ -99,7 +104,9 @@ class MainActivity : AppCompatActivity() {
     private fun updateMediaProgress() {
         lifecycleScope.launch {
             while(true) {
-                delay(800)
+                delay(500)
+                if (isSeek)
+                    continue
                 seekBar.progress = ffPlayerViewModel.ffPlayer.getProgress()
             }
         }

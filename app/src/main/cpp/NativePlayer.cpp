@@ -205,4 +205,19 @@ double NativePlayer::getCurrentPosition() {
     return 0;
 }
 
+void NativePlayer::seek(int progress) {
+    if (videoChannel == nullptr) {
+        return;
+    }
+    videoChannel->stop();
+    audioChannel->stop();
+    int _progress = ((double)progress/100) * duration;
+    LOGI("_progress=%d",_progress);
+    int ret = av_seek_frame(formatContext, -1, _progress, AVSEEK_FLAG_BACKWARD);
+    if (ret < 0) {
+        javaHelper->onError(MAIN_THREAD, FFMPEG_SEEK_ERROR);
+        return;
+    }
+}
+
 

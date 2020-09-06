@@ -61,7 +61,8 @@ void AudioChannel::play() {
 }
 
 void AudioChannel::stop() {
-
+    this->pkt_queue.clear();
+    this->frame_queue.clear();
 }
 
 void AudioChannel::audio_init() {

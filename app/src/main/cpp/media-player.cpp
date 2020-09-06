@@ -99,3 +99,12 @@ Java_com_example_ffmpegdemo_FFPlayer_nativeGetCurrentPosition(JNIEnv *env, jobje
     }
     return 0;
 }
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_example_ffmpegdemo_FFPlayer_nativeSetProgress(JNIEnv *env, jobject thiz, jint progress) {
+    // TODO: implement nativeSetProgress()
+    if (nativePlayer != nullptr) {
+        nativePlayer->seek(progress);
+    }
+}

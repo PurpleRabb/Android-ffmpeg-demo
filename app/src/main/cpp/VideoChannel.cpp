@@ -170,7 +170,8 @@ void VideoChannel::play() {
 
 
 void VideoChannel::stop() {
-
+    this->pkt_queue.clear();
+    this->frame_queue.clear();
 }
 
 void VideoChannel::setRenderFrame(RenderFrame func) {
