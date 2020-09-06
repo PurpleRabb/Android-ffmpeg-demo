@@ -127,11 +127,11 @@ void NativePlayer::play() {
         ret = av_read_frame(formatContext,packet);
         if (ret == 0) {
             if (videoChannel && packet->stream_index == videoChannel->channelId) {
-                __android_log_print(AV_LOG_INFO,TAG,"push video packet %d",videoChannel->pkt_queue.size());
+                //__android_log_print(AV_LOG_INFO,TAG,"push video packet %d",videoChannel->pkt_queue.size());
                 videoChannel->pkt_queue.enQueue(packet);
             }
             if (audioChannel && packet->stream_index == audioChannel->channelId) {
-                __android_log_print(AV_LOG_INFO,TAG,"push audio packet %d",audioChannel->pkt_queue.size());
+                //__android_log_print(AV_LOG_INFO,TAG,"push audio packet %d",audioChannel->pkt_queue.size());
                 audioChannel->pkt_queue.enQueue(packet);
             }
         } else if (ret == AVERROR_EOF) { //播放完毕

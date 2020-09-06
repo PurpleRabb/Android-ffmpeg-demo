@@ -123,29 +123,29 @@ void VideoChannel::syncFrame() {
         double extra_delay = frame->repeat_pict / 2 * this->fps; //解码一帧花费的时间
         double delay = extra_delay + frame_delay;
         position = audioClock*1000*1000/duration;
-        LOGI("fps=%d,diff=%f,audioClock=%lf", this->fps, diff, position);
+        //LOGI("fps=%d,diff=%f,audioClock=%lf", this->fps, diff, position);
 
         if (clock > audioClock) { //视频播的快
             if (diff > 1) {
                 //相差大
-                LOGI("----------1--------------");
+                //LOGI("----------1--------------");
                 av_usleep((2 * delay) * 1000000);
             } else {
                 //正常休眠
-                LOGI("----------2--------------");
+                //LOGI("----------2--------------");
                 av_usleep((delay + diff) * 1000000);
             }
         } else {  //音频超前
             if (abs(diff) > 1) {
-                LOGI("----------3--------------");
+                //LOGI("----------3--------------");
                 //不休眠，尽量让视频追赶
             } else if (abs(diff) > 0.5) {
-                LOGI("----------4--------------");
+                //LOGI("----------4--------------");
                 //丢弃视频非关键帧来节省视频解码时间
                 releaseFrame(frame);
                 frame_queue.sync();
             } else {
-                LOGI("----------5--------------");
+                //LOGI("----------5--------------");
                 av_usleep((delay + diff) * 1000000);
             }
         }

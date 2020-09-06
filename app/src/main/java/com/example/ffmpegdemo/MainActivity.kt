@@ -86,17 +86,25 @@ class MainActivity : AppCompatActivity() {
             when (it) {
                 PlayStatus.PLAYING ->  {
                     Log.i(TAG, "start playing")
+                    controlButton.setImageResource(R.drawable.ic_baseline_pause_24)
+                }
+                PlayStatus.PAUSE -> {
+                    Log.i(TAG, "pause")
+                    controlButton.setImageResource(R.drawable.ic_baseline_play_arrow_24)
+                }
+                PlayStatus.NOT_READY -> {
+                    //controlButton.isEnabled = false
                 }
                 PlayStatus.STOP -> {
                     Log.i(TAG, "stopped")
-                    seekBar.progress = seekBar.max
+                    //seekBar.progress = seekBar.max
                 }
             }
         })
 
         controlButton.setOnClickListener {
-            ffPlayerViewModel.ffPlayer.setUri(getExternalFilesDir(null)?.absolutePath.toString()+"/test.mp4")
-            ffPlayerViewModel.ffPlayer.switchStatus()
+            ffPlayerViewModel.setUri(getExternalFilesDir(null)?.absolutePath.toString()+"/test.mp4")
+            ffPlayerViewModel.switchStatus()
         }
     }
 
@@ -105,9 +113,10 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             while(true) {
                 delay(500)
-                if (isSeek)
+                if (isSeek) {
                     continue
-                seekBar.progress = ffPlayerViewModel.ffPlayer.getProgress()
+                }
+                seekBar.progress = ffPlayerViewModel.getProgress()
             }
         }
     }

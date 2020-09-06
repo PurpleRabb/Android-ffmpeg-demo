@@ -41,6 +41,6 @@ private:
     RenderFrame renderFrame;
     int fps;
     int64_t duration;
-    double position = 0;
+    volatile double position = 0;
 };
 #endif //FFMPEGDEMO_VIDEOCHANNEL_H

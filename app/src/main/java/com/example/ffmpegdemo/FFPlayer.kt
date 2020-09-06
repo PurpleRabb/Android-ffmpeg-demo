@@ -28,7 +28,7 @@ class FFPlayer {
     private var onProgressListener: OnProgressListener? = null
     private var onErrorListener: OnErrorListener? = null
     private var status: PlayStatus = PlayStatus.NOT_READY
-    private var pausedByUser = false
+    var pausedByUser = false
     private lateinit var dataSource: String
 
 

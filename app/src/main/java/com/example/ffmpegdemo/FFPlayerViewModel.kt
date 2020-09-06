@@ -15,11 +15,12 @@ enum class PlayStatus {
 
 class FFPlayerViewModel(application: Application) : AndroidViewModel(application),
     LifecycleObserver {
+    private lateinit var dataSource: String
     private var _error: MutableLiveData<Int> = MutableLiveData()
     private var _progress: MutableLiveData<Int> = MutableLiveData()
     private var _playStatus: MutableLiveData<PlayStatus> = MutableLiveData()
 
-    var ffPlayer: FFPlayer = FFPlayer()
+    private var ffPlayer: FFPlayer = FFPlayer()
 
     var error: LiveData<Int> = _error
     var progress: LiveData<Int> = _progress
@@ -27,6 +28,7 @@ class FFPlayerViewModel(application: Application) : AndroidViewModel(application
 
     init {
         setPlayer(ffPlayer)
+        _playStatus.value = PlayStatus.NOT_READY
     }
 
     fun setSurfaceView(surfaceView: SurfaceView) {
@@ -70,5 +72,39 @@ class FFPlayerViewModel(application: Application) : AndroidViewModel(application
 
     fun setProgress(progress: Int) {
         ffPlayer.setProgress(progress)
+    }
+
+    fun setUri(s: String) {
+        this.dataSource = s
+        ffPlayer.setUri(s)
+    }
+
+    fun switchStatus() {
+        when (_playStatus.value) {
+            PlayStatus.PAUSE -> {
+                ffPlayer.setStatus(PlayStatus.PAUSE)
+                _playStatus.value = PlayStatus.PLAYING
+                ffPlayer.pausedByUser = false
+                ffPlayer.resume()
+            }
+            PlayStatus.PLAYING -> {
+                ffPlayer.setStatus(PlayStatus.PLAYING)
+                _playStatus.value = PlayStatus.PAUSE
+                ffPlayer.pausedByUser = true
+                ffPlayer.pause()
+            }
+            PlayStatus.NOT_READY -> {
+                ffPlayer.nativePrepare(dataSource)
+            }
+            PlayStatus.STOP -> {
+                ffPlayer.setStatus(PlayStatus.PLAYING)
+                ffPlayer.pausedByUser = false
+                ffPlayer.nativePrepare(dataSource)
+            }
+        }
+    }
+
+    fun getProgress(): Int {
+        return ffPlayer.getProgress()
     }
 }
