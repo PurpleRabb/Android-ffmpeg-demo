@@ -46,11 +46,13 @@ VideoChannel::~VideoChannel() {
 void *_decode(void *argv) {
     VideoChannel *videoChannel = static_cast<VideoChannel *>(argv);
     videoChannel->decodePacket();
+    return 0;
 }
 
 void *_syncframe(void *argv) {
     VideoChannel *videoChannel = static_cast<VideoChannel *>(argv);
     videoChannel->syncFrame();
+    return 0;
 }
 
 
@@ -170,6 +172,11 @@ void VideoChannel::play() {
 
 
 void VideoChannel::stop() {
+    isPlaying = 0;
+    pkt_queue.setWork(0);
+    frame_queue.setWork(0);
+    pthread_join(pid_sync, 0);
+    pthread_join(pid_video_play, 0);
     this->pkt_queue.clear();
     this->frame_queue.clear();
 }

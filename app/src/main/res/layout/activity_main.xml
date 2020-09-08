@@ -41,6 +41,19 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_weight="14" />
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginEnd="5dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:singleLine="true"
+                android:text="00:00"
+                android:textColor="#FFFFFF"
+                tools:text="23:20" />
         </LinearLayout>
 
     </FrameLayout>

@@ -19,7 +19,7 @@ extern "C" {
 }
 
 class NativePlayer {
-
+    friend void *stop_fun(void *argv);
 public:
     NativePlayer(CallJavaHelper *callJavaHelper,const char* dataSouce);
     ~NativePlayer();
@@ -35,19 +35,26 @@ public:
 
     void resume();
 
+    void stop();
+
     void setRenderFrameCallBack(void (*fun)(uint8_t *, int, int, int));
 
     void seek(int progress);
 
     double getCurrentPosition();
 
+    int64_t getDuration();
+
 private:
     void report_error_to_java(int thread_env,int error_code);
     void report_progress_to_java(int thread_env, int progress);
+    void _stop();
 
 private:
     pthread_t prepare_pid;
     pthread_t play_pid;
+    pthread_t stop_pid;
+    pthread_mutex_t seek_mutex;
     AVFormatContext *formatContext;
     CallJavaHelper *javaHelper;
     VideoChannel *videoChannel;

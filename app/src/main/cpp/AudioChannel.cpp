@@ -61,25 +61,40 @@ void AudioChannel::play() {
 }
 
 void AudioChannel::stop() {
-    this->pkt_queue.clear();
-    this->frame_queue.clear();
+    isPlaying = 0;
+    pkt_queue.setWork(0);
+    frame_queue.setWork(0);
+    pthread_join(pid_decode, 0);
+    pthread_join(pid_audioinit, 0);
+    pkt_queue.clear();
+    frame_queue.clear();
+
+    //7.1 设置停止状态
+    if (bqPlayerInterface) {
+        (*bqPlayerInterface)->SetPlayState(bqPlayerInterface, SL_PLAYSTATE_STOPPED);
+        bqPlayerInterface = 0;
+    }
+    //7.2 销毁播放器
+    if (bqPlayerObject) {
+        (*bqPlayerObject)->Destroy(bqPlayerObject);
+        bqPlayerObject = 0;
+        bqPlayerBufferQueue = 0;
+    }
+    //7.3 销毁混音器
+    if (outputMixObject) {
+        (*outputMixObject)->Destroy(outputMixObject);
+        outputMixObject = 0;
+    }
+    //7.4 销毁引擎
+    if (engineObject) {
+        (*engineObject)->Destroy(engineObject);
+        engineObject = 0;
+        engineInterface = 0;
+    }
 }
 
 void AudioChannel::audio_init() {
 
-    //1. 音频引擎
-    SLEngineItf engineInterface = NULL;
-    //音频对比昂
-    SLObjectItf engineObject = NULL;
-    //2. 设置混音器
-    SLObjectItf outputMixObject = NULL;
-    //3. 创建播放器
-    SLObjectItf  bqPlayerObject = NULL;
-    // 回调接口.
-    SLPlayItf  bqPlayerInterface = NULL;
-    //4. 创建缓冲队列和回调函数
-//    SLAndroidSimpleBufferQueueItf bqPlayerBufferQueue = NULL;
-    SLAndroidSimpleBufferQueueItf bqPlayerBufferQueue ;
     //创建音频引擎 .
 
     // ----------------------------1. 初始化播放器引擎-----------------------------------------------

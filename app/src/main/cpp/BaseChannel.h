@@ -18,6 +18,7 @@ public:
     virtual ~BaseChannel();
     virtual void play() = 0;
     virtual void stop() = 0;
+    void reset();
     virtual void pause() {
         isPause = true;
         frame_queue.setWork(0);

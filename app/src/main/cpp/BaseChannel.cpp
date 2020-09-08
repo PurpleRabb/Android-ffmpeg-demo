@@ -33,3 +33,12 @@ void BaseChannel::releaseFrame(AVFrame *&frame) {
         frame = 0;
     }
 }
+
+void BaseChannel::reset() {
+    pkt_queue.setWork(0);
+    frame_queue.setWork(0);
+    pkt_queue.clear();
+    frame_queue.clear();
+    pkt_queue.setWork(1);
+    frame_queue.setWork(1);
+}

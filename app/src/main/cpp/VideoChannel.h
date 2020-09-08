@@ -5,7 +5,7 @@
 #ifndef FFMPEGDEMO_VIDEOCHANNEL_H
 #define FFMPEGDEMO_VIDEOCHANNEL_H
 #include "BaseChannel.h"
-#include "AudioChannel.h"""
+#include "AudioChannel.h"
 
 extern "C" {
 #include <libavutil/time.h>

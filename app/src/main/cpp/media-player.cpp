@@ -16,7 +16,7 @@ NativePlayer *nativePlayer = nullptr;
 
 void renderFrame(uint8_t *data, int linesize, int w, int h) {
     //真正的渲染函数
-    __android_log_print(ANDROID_LOG_INFO, TAG, "%s\n", __func__);
+    //__android_log_print(ANDROID_LOG_INFO, TAG, "%s\n", __func__);
     if (nativeWindow == nullptr) {
         return;
     }
@@ -58,7 +58,6 @@ Java_com_example_ffmpegdemo_FFPlayer_nativePrepare(JNIEnv *env, jobject thiz,
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_example_ffmpegdemo_FFPlayer_nativeStart(JNIEnv *env, jobject thiz) {
-    // TODO: implement native_start()
     nativePlayer->start();
 }
 
@@ -78,7 +77,6 @@ Java_com_example_ffmpegdemo_FFPlayer_nativeSetSurface(JNIEnv *env, jobject thiz,
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_example_ffmpegdemo_FFPlayer_nativePause(JNIEnv *env, jobject thiz) {
-    // TODO: implement nativePause()
     LOGI("%s",__func__);
     nativePlayer->pause();
 }
@@ -86,7 +84,6 @@ Java_com_example_ffmpegdemo_FFPlayer_nativePause(JNIEnv *env, jobject thiz) {
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_example_ffmpegdemo_FFPlayer_nativeResume(JNIEnv *env, jobject thiz) {
-    // TODO: implement nativeResume()
     LOGI("%s",__func__);
     nativePlayer->resume();
 }
@@ -103,8 +100,23 @@ Java_com_example_ffmpegdemo_FFPlayer_nativeGetCurrentPosition(JNIEnv *env, jobje
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_example_ffmpegdemo_FFPlayer_nativeSetProgress(JNIEnv *env, jobject thiz, jint progress) {
-    // TODO: implement nativeSetProgress()
     if (nativePlayer != nullptr) {
         nativePlayer->seek(progress);
+    }
+}
+extern "C"
+JNIEXPORT jlong JNICALL
+Java_com_example_ffmpegdemo_FFPlayer_getDuration(JNIEnv *env, jobject thiz) {
+    if (nativePlayer != nullptr) {
+        return nativePlayer->getDuration();
+    }
+    return 0;
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_example_ffmpegdemo_FFPlayer_nativeStop(JNIEnv *env, jobject thiz) {
+    if (nativePlayer != nullptr) {
+        nativePlayer->stop();
     }
 }

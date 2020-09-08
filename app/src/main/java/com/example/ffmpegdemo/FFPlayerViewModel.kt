@@ -19,16 +19,18 @@ class FFPlayerViewModel(application: Application) : AndroidViewModel(application
     private var _error: MutableLiveData<Int> = MutableLiveData()
     private var _progress: MutableLiveData<Int> = MutableLiveData()
     private var _playStatus: MutableLiveData<PlayStatus> = MutableLiveData()
-
+    private var _duration: MutableLiveData<Long> = MutableLiveData()
     private var ffPlayer: FFPlayer = FFPlayer()
 
     var error: LiveData<Int> = _error
     var progress: LiveData<Int> = _progress
     var playStatus: LiveData<PlayStatus> = _playStatus
+    var duration: LiveData<Long> = _duration
 
     init {
         setPlayer(ffPlayer)
         _playStatus.value = PlayStatus.NOT_READY
+        _duration.value = 0
     }
 
     fun setSurfaceView(surfaceView: SurfaceView) {
@@ -39,6 +41,7 @@ class FFPlayerViewModel(application: Application) : AndroidViewModel(application
         ffPlayer.setOnPrepareListener(object : FFPlayer.OnPrepareListener {
             override fun onPrepare() {
                 _playStatus.postValue(PlayStatus.PLAYING)
+                _duration.postValue(ffPlayer.getDuration())
                 ffPlayer.setStatus(PlayStatus.PLAYING)
                 ffPlayer.nativeStart();
             }

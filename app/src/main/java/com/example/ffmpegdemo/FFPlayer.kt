@@ -121,12 +121,15 @@ class FFPlayer {
         nativeSetProgress(progress)
     }
 
+
     external fun nativePrepare(dataSource: String)
     external fun nativeStart()
     external fun nativeSetSurface(surface: Surface)
     external fun nativeGetCurrentPosition(): Double
     external fun nativePause()
     external fun nativeResume()
+    external fun getDuration() : Long
     external fun nativeSetProgress(progress: Int)
+    external fun nativeStop()
 }
 
